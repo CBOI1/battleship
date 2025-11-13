@@ -4,7 +4,8 @@ class Gameboard {
     
     //if board element >= 0 then it represents a specific ship
     static EMPTY_SPACE = -1;
-    static SUCCESSFUL_HIT = -2;
+    static HIT = -2;
+    static MISS = -3;
     static range(start, end, step = 1) {
         return Array.from({length: Math.ceil((end - start) / step)}, (_, i) => start + i * step)
     }
@@ -21,8 +22,11 @@ class Gameboard {
     }
     //INPUT: Starting coordinates of ship, offset from first cell, isHorizontal flag
     //RETURNS: index of board to retrieve given its orientation
-    #getIndex(coord, offset, isHorizontal) {
+    #getIndexOffset(coord, offset, isHorizontal) {
         return isHorizontal ? (BOARD_SIZE * coord[0]) + (coord[1] + offset) : (BOARD_SIZE * (offset + coord[0])) + coord[1]
+    }
+    #getIndex(row, col) {
+        return (BOARD_SIZE * row) + col;
     }
     //checks a ship's surrounding borders to make sure no ships are adjacent
     #adjacentCellsValid(coord, size, isHorizontal) {
@@ -49,7 +53,7 @@ class Gameboard {
             for (let index = start; index < end; index++) {
                 const inBounds = 0 <= index && index < BOARD_SIZE;
                 if (inBounds) {
-                    const i = this.#getIndex(coord, index - start, isHorizontal);
+                    const i = this.#getIndexOffset(coord, index - start, isHorizontal);
                     if (this.#board[i] >= 0) {
                          return false;
                     }
@@ -57,7 +61,6 @@ class Gameboard {
             }
             return true;
         }
-
         //check all borders have no cells that conflict with a ship
         let borderIsValid = checkBorder([top, left], right - left + 1, true);
         borderIsValid &&= checkBorder([top, right], bottom - top + 1, false); 
@@ -83,7 +86,7 @@ class Gameboard {
         }
         //check attempting to use a cell already occupied
         const conflictExists = Gameboard.range(0, size).reduce((aggregate, offset) => {
-            const cellIndex = this.#getIndex(coord, offset, isHorizontal);
+            const cellIndex = this.#getIndexOffset(coord, offset, isHorizontal);
             return aggregate || this.#board[cellIndex] !== Gameboard.EMPTY_SPACE;
         },false);
         if (conflictExists) {
@@ -94,10 +97,9 @@ class Gameboard {
             return false
         }
         
-        
         const shipId = this.#createShip(size)
         Gameboard.range(0, size).forEach((offset) => {
-            this.#board[this.#getIndex(coord, offset, isHorizontal)] = shipId
+            this.#board[this.#getIndexOffset(coord, offset, isHorizontal)] = shipId
         });
         return true;
     }
@@ -107,8 +109,23 @@ class Gameboard {
         this.#idMap.set(idOfShip, new Ship(size));
         return idOfShip;
     }
-    
-
+    receiveAttack(row, col) {
+        const index = this.#getIndex(row, col);
+        if (this.#board[index] === Gameboard.EMPTY_SPACE) {
+            this.#board[index] = Gameboard.MISS;
+        } else if (this.#board[index] >= 0) {
+            debugger;
+            const shipId = this.#board[index];
+            this.#idMap.get(shipId).hit();
+            this.#board[index] = Gameboard.HIT;
+        }
+    }
+    isMiss(row, col) {
+        return this.#board[this.#getIndex(row, col)] === Gameboard.MISS;
+    }
+    isHit(row, col) {
+        return this.#board[this.#getIndex(row, col)] === Gameboard.HIT;
+    }
 }
 
 module.exports = {

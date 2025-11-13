@@ -34,3 +34,20 @@ test ("ship placement functionality", () => {
     expect(board.place([7, 0], 4, true)).toBe(false);
 
 });
+
+test('Hitting and missing ships', () => {
+    const board = new Gameboard();
+    board.place([0, 0], 2, true);
+    board.place([3, 2], 4, false);
+    board.place([3, 8], 2, true);
+    //miss a ship
+    board.receiveAttack(0, 2);
+    expect(board.isMiss(0, 2)).toBe(true);
+    board.receiveAttack(3, 7);
+    expect(board.isMiss(3, 7)).toBe(true);
+    //attack a ship
+    board.receiveAttack(0, 0);
+    expect(board.isHit(0, 0)).toBe(true);
+    board.receiveAttack(3, 9);
+    expect(board.isHit(3, 9)).toBe(true);
+});
