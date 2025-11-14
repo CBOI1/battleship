@@ -109,22 +109,22 @@ class Gameboard {
         this.#idMap.set(idOfShip, new Ship(size));
         return idOfShip;
     }
+    //returns result object with valid and gameover properties
     receiveAttack(row, col) {
         const index = this.#getIndex(row, col);
         if (this.#board[index] === Gameboard.EMPTY_SPACE) {
             this.#board[index] = Gameboard.MISS;
+            return {valid: true, gameOver: this.allShipsSunk(), hit: false, miss: true};
         } else if (this.#board[index] >= 0) {
-            debugger;
             const shipId = this.#board[index];
             this.#idMap.get(shipId).hit();
             this.#board[index] = Gameboard.HIT;
+            return {valid: true, gameOver: this.allShipsSunk(), hit: true, miss: false};
         }
+        return {valid: false, gameOver: false, hit: false, miss: false};
     }
-    isMiss(row, col) {
-        return this.#board[this.#getIndex(row, col)] === Gameboard.MISS;
-    }
-    isHit(row, col) {
-        return this.#board[this.#getIndex(row, col)] === Gameboard.HIT;
+    allShipsSunk() {
+        return this.#idMap.values().reduce((allShipsSunk, currShip) => allShipsSunk && currShip.isSunk, true);
     }
 }
 
