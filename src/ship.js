@@ -1,20 +1,19 @@
 //  http://localhost:8080/
 
 class Ship {
-    #shipHitStatus;
+    #size;
+    #hitCount;
     constructor(size) {
-        this.#shipHitStatus = new Array(size);
-        this.#shipHitStatus.fill(false);
+        this.#size = size;
+        this.#hitCount = 0;
     }
-
     get isSunk() {
-        return this.#shipHitStatus.reduce((aggregate, cellStatus) => aggregate && cellStatus, true);
+        return this.#hitCount == this.#size;
     }
-    attackCell(ithCell) {
-        this.#shipHitStatus[ithCell] = true;
+    hit() {
+       this.#hitCount = Math.min(this.#hitCount + 1, this.#size); 
     }
 }
-
 
 module.exports = {
     Ship

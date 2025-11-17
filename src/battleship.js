@@ -36,7 +36,7 @@ class BattleShip {
     //returns true if attack causes game to end
     attack(row, col) {
         const result = this.#defender.receiveAttack(row, col);
-        if (result.gameover) {
+        if (result.gameOver) {
             this.#winner = this.#attacker;
             return result;
         } else if (result.valid) {
@@ -45,4 +45,11 @@ class BattleShip {
         }
         return result;
     }
+    dummyattack(row, col) {
+        return this.#players[0].receiveAttack(row, col);
+    }
 }
+
+module.exports = {
+    BattleShip
+};
