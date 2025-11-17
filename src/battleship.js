@@ -12,7 +12,7 @@ class BattleShip {
     #turn;
     #winner;
     constructor() {
-        this.#players = [new Player(), new Player()];
+        this.#players = [new Player("Player 1"), new Player("Player 2")];
         this.#turn = 0;
         this.#winner = null;
         //populate boards with dummy ships
@@ -24,6 +24,10 @@ class BattleShip {
 
     #updateTurn() {
         this.#turn = (this.#turn + 1) % 2;
+    }
+
+    get activePlayer() {
+        return this.#attacker.name;
     }
 
     get #attacker() {
