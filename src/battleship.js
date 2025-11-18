@@ -1,4 +1,5 @@
 const { Player } = require("./player");
+const {BOARD_SIZE, HIT, MISS} = require("./gameboard.js")
 
 const ships = [
 [[0, 0], 1, true],
@@ -26,8 +27,17 @@ class BattleShip {
         this.#turn = (this.#turn + 1) % 2;
     }
 
-    get activePlayer() {
+    get activePlayerName() {
         return this.#attacker.name;
+    }
+    get inactivePlayerBoard() {
+        return this.#defender.exposeBoard.map((cellVal) => {
+              return {    
+                        miss : (cellVal === MISS),
+                        hit : (cellVal === HIT),
+                        get clear() { return !this.miss && !this.hit }
+            }
+        });
     }
 
     get #attacker() {
@@ -55,5 +65,6 @@ class BattleShip {
 }
 
 module.exports = {
-    BattleShip
+    BattleShip,
+    getCoord(index) { return [Math.floor(index / BOARD_SIZE), index % BOARD_SIZE];}
 };

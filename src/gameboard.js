@@ -1,11 +1,12 @@
 const BOARD_SIZE = 10;
+const EMPTY_SPACE = -1;
+const HIT = -2;
+const MISS = -3;
 const {Ship} = require("./ship.js");
 class Gameboard {
     
     //if board element >= 0 then it represents a specific ship
-    static EMPTY_SPACE = -1;
-    static HIT = -2;
-    static MISS = -3;
+    
     static range(start, end, step = 1) {
         return Array.from({length: Math.ceil((end - start) / step)}, (_, i) => start + i * step)
     }
@@ -17,7 +18,7 @@ class Gameboard {
         this.#shipId = 0;
         this.#idMap = new Map();
         //store board in row major form
-        this.#board = new Array(BOARD_SIZE * BOARD_SIZE).fill(Gameboard.EMPTY_SPACE);
+        this.#board = new Array(BOARD_SIZE * BOARD_SIZE).fill(EMPTY_SPACE);
         
     }
     //INPUT: Starting coordinates of ship, offset from first cell, isHorizontal flag
@@ -87,7 +88,7 @@ class Gameboard {
         //check attempting to use a cell already occupied
         const conflictExists = Gameboard.range(0, size).reduce((aggregate, offset) => {
             const cellIndex = this.#getIndexOffset(coord, offset, isHorizontal);
-            return aggregate || this.#board[cellIndex] !== Gameboard.EMPTY_SPACE;
+            return aggregate || this.#board[cellIndex] !== EMPTY_SPACE;
         },false);
         if (conflictExists) {
             return false
@@ -104,6 +105,10 @@ class Gameboard {
         return true;
     }
 
+    get exposeBoard() {
+        return this.#board.map(val => val);
+    }
+
     #createShip(size) {
         const idOfShip = this.#shipId++;
         this.#idMap.set(idOfShip, new Ship(size));
@@ -112,13 +117,13 @@ class Gameboard {
     //returns result object with valid and gameover properties
     receiveAttack(row, col) {
         const index = this.#getIndex(row, col);
-        if (this.#board[index] === Gameboard.EMPTY_SPACE) {
-            this.#board[index] = Gameboard.MISS;
+        if (this.#board[index] === EMPTY_SPACE) {
+            this.#board[index] = MISS;
             return {valid: true, gameOver: this.allShipsSunk(), hit: false, miss: true};
         } else if (this.#board[index] >= 0) {
             const shipId = this.#board[index];
             this.#idMap.get(shipId).hit();
-            this.#board[index] = Gameboard.HIT;
+            this.#board[index] = HIT;
             return {valid: true, gameOver: this.allShipsSunk(), hit: true, miss: false};
         }
         return {valid: false, gameOver: false, hit: false, miss: false};
@@ -130,5 +135,7 @@ class Gameboard {
 
 module.exports = {
     Gameboard,
-    BOARD_SIZE
+    BOARD_SIZE,
+    HIT,
+    MISS
 };
