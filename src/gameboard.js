@@ -31,6 +31,7 @@ class Gameboard {
     }
     //checks a ship's surrounding borders to make sure no ships are adjacent
     #adjacentCellsValid(coord, size, isHorizontal) {
+        //left, right, bottom, top point to cells that frame the outer boundary of a ship
         let left, right, bottom, top;
         if (isHorizontal) {
             left = coord[1] - 1;
@@ -45,6 +46,7 @@ class Gameboard {
         }
         //check top border
         const checkBorder = (coord, size, isHorizontal) => {
+            //dimSelector is the axis the ship lies on
             const dimSelector = isHorizontal ? 1 : 0;
             if (!(0 <= coord[1 - dimSelector] && coord[1 - dimSelector] < BOARD_SIZE)) {
                 return true;
@@ -63,6 +65,7 @@ class Gameboard {
             return true;
         }
         //check all borders have no cells that conflict with a ship
+        //traverse outer boundaries to check no ships are placed
         let borderIsValid = checkBorder([top, left], right - left + 1, true);
         borderIsValid &&= checkBorder([top, right], bottom - top + 1, false); 
         borderIsValid &&= checkBorder([bottom, left], right - left + 1, true); 
