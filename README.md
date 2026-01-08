@@ -32,6 +32,6 @@ The project is organized to separate game logic, UI rendering, and test files fo
 - Debugging turn-based logic and UI updates
 
 ## How To Run
--Install package dependices by running 'npm install'
--Run the npm script dev by running 'npm run dev'
--Open browser and paste the following URL: http://localhost:8080/
+- Install package dependices by running 'npm install'
+- Run the npm script dev by running 'npm run dev'
+- Open browser and paste the following URL: http://localhost:8080/
